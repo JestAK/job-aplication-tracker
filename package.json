@@ -15,11 +15,15 @@
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",
     "@commitlint/config-conventional": "^20.5.0",
+    "@types/node": "^25.6.0",
+    "@types/pg": "^8.20.0",
     "eslint": "^10.2.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "prettier": "^3.8.3",
-    "typescript": "^5.5.3"
+    "prisma": "^7.7.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   },
   "private": true,
   "repository": {
@@ -29,9 +33,15 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/JestAK/job-aplication-tracker/issues"
   },
-  "homepage": "https://github.com/JestAK/job-aplication-tracker#readme"
+  "homepage": "https://github.com/JestAK/job-aplication-tracker#readme",
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.7.0",
+    "@prisma/client": "^7.7.0",
+    "dotenv": "^17.4.2",
+    "pg": "^8.20.0"
+  }
 }
