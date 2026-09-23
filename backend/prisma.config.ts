@@ -1,16 +1,14 @@
-import { config } from 'dotenv';
-import { defineConfig } from 'prisma/config';
+import dotenv from 'dotenv';
 
-// Docker Compose keeps its environment in the repository root. When Prisma is
-// run locally from /backend, load that same file without duplicating secrets.
-config({ path: '../.env' });
+dotenv.config({ path: '../.env' });
+import { definePrismaConfig } from 'prisma/config';
+import { defineConfig as ormConfig } from '@prisma/orm-postgres/config';
 
-export default defineConfig({
-  schema: 'prisma/schema.prisma',
-  migrations: {
-    path: 'prisma/migrations',
-  },
-  datasource: {
-    url: process.env['DATABASE_URL'],
-  },
+export default definePrismaConfig({
+  orm: ormConfig({
+    contract: './src/prisma/contract.prisma',
+    db: {
+      connection: process.env['DATABASE_URL']!,
+    },
+  }),
 });

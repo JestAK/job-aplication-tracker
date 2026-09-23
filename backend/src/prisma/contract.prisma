@@ -1,33 +1,25 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
-}
-
-datasource db {
-  provider = "postgresql"
-}
+// use prisma-next
 
 model User {
   id        String    @id @default(uuid())
   email     String    @unique
+  password  String
   name      String
   profiles  Profile[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt temporal.createdAtString()
+  updatedAt temporal.updatedAtString()
 }
 
 model Profile {
   id          String        @id @default(uuid())
   user        User          @relation(fields: [userId], references: [id])
   userId      String
+  profileName String
   application Application[]
   cv          Cv[]
   response    Response[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt   temporal.createdAtString()
+  updatedAt   temporal.updatedAtString()
 }
 
 model Application {
@@ -40,8 +32,8 @@ model Application {
   vacancyUrl String?
   note       String?
   status     String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  temporal.createdAtString()
+  updatedAt  temporal.updatedAtString()
   cv         Cv?      @relation(fields: [cvId], references: [id])
   cvId       String?
 }
@@ -53,8 +45,8 @@ model Cv {
   application Application[]
   fileUrl     String
   tags        String[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt   temporal.createdAtString()
+  updatedAt   temporal.updatedAtString()
 }
 
 model Response {
@@ -64,14 +56,14 @@ model Response {
   title     String
   content   String
   tags      String[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt temporal.createdAtString()
+  updatedAt temporal.updatedAtString()
 }
 
 model RefreshToken {
   id        String   @id @default(uuid())
   userId    String
   token     String   @unique
-  createdAt DateTime @default(now())
+  createdAt temporal.createdAtString()
   expiresAt DateTime
 }
