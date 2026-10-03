@@ -19,6 +19,7 @@ export class AuthController {
     @Body() createUserDto: CreateUserDto,
     @Res({ passthrough: true }) res: express.Response,
   ) {
+    console.log('Registering user with email:', createUserDto.email);
     const { email, password } = createUserDto;
     const encryptedPassword = await this.authService.encodePassword(password);
     let access_token: { access_token: string };

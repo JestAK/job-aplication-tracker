@@ -31,6 +31,7 @@ services:
       PORT: 8000
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      FRONTEND_URL: ${FRONTEND_URL}
     ports:
       - "8000:8000"
     volumes:
