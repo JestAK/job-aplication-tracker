@@ -7,8 +7,12 @@ export type User = any;
 export class UsersService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findOne(email: string): Promise<User | undefined> {
+  async findOneByEmail(email: string): Promise<User | undefined> {
     return await this.prismaService.getOneUserByEmail(email);
+  }
+
+  async findOneById(id: string): Promise<User | undefined> {
+    return await this.prismaService.getOneUserById(id);
   }
 
   async createUser(email: string, password: string): Promise<User> {

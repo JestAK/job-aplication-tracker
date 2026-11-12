@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service.js';
 import { AuthGuard } from '../auth/auth.guard.js';
 
@@ -6,20 +6,10 @@ import { AuthGuard } from '../auth/auth.guard.js';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get('test-get')
-  async testGet() {
-    return this.usersService.findOne('mail@mail.com');
-  }
-
   @UseGuards(AuthGuard)
-  @Get(':id')
-  async testGuard() {
-    return 'Can access this route';
-  }
-
-  @Post('test-create')
-  async testCreate(@Body() body: { email: string; password: string }) {
-    const { email, password } = body;
-    return this.usersService.createUser(email, password);
+  @Get('')
+  async getUser(@Req() req: any) {
+    const userId = req.user.sub;
+    return this.usersService.findOneById(userId);
   }
 }
