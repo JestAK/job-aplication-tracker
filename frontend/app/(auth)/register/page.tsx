@@ -12,6 +12,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { z } from 'zod';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function Register() {
   const register = z
@@ -25,8 +28,13 @@ export default function Register() {
       path: ['confirmPassword'],
     });
 
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const router = useRouter();
+
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
+    setErrorMsg('');
 
     const form = e.currentTarget;
     const formData = new FormData(form);
@@ -38,7 +46,8 @@ export default function Register() {
     });
 
     if (!data.success) {
-      console.error(data.error);
+      console.log(data);
+      setErrorMsg(data.error.issues[0].message);
       return;
     }
 
@@ -58,13 +67,25 @@ export default function Register() {
         }
       );
 
+      const responseResult = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to register');
+        const errorMessage =
+          responseResult.message || 'Failed to register. Please try again.';
+        throw new Error(errorMessage);
       }
 
       console.log('User registered successfully');
+      localStorage.setItem('accessToken', responseResult.access_token);
+
+      router.replace('/application-table');
     } catch (error) {
       console.error(error);
+      setErrorMsg(
+        error instanceof Error
+          ? error.message
+          : 'Failed to register. Please try again.'
+      );
     }
   }
   return (
@@ -74,6 +95,11 @@ export default function Register() {
           <CardTitle>Create account</CardTitle>
           <CardDescription>Enter your data to create account</CardDescription>
         </CardHeader>
+        {errorMsg && (
+          <div className="mb-4 mx-4 p-2 text-sm text-red-600 bg-red-200 rounded-md">
+            {errorMsg}
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <CardContent>
             <div className="flex flex-col gap-6">
@@ -102,13 +128,15 @@ export default function Register() {
               </div>
             </div>
           </CardContent>
-          <CardFooter className="flex-col gap-2">
+          <CardFooter className="flex-col gap-2 mt-8">
             <Button type="submit" className="w-full">
               Create Account
             </Button>
             <div className="flex w-full items-center justify-center gap-1 mt-4">
               <Label className="text-gray-500">Already have an account?</Label>
-              <Button variant="link">Sign In</Button>
+              <Button variant="link">
+                <Link href={'/login'}>Sign In</Link>
+              </Button>
             </div>
           </CardFooter>
         </form>

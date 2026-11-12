@@ -1,4 +1,10 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Res,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/CreateUser.dto.js';
 import { LoginUserDto } from './dto/LoginUser.dto.js';
 import { AuthService } from './auth.service.js';
@@ -31,10 +37,8 @@ export class AuthController {
         access_token = { access_token: tokens.access_token };
         refresh_token = { refresh_token: tokens.refresh_token };
       } catch (error) {
-        return {
-          message: 'Error logging in after registration',
-          error: error.message,
-        };
+        console.error('Error logging in after registration:', error);
+        throw error;
       }
       res.cookie('refreshToken', refresh_token, {
         httpOnly: true,
@@ -46,7 +50,8 @@ export class AuthController {
 
       return { access_token };
     } catch (error) {
-      return { message: 'Error registering user', error: error.message };
+      console.error('Error during registration:', error);
+      throw error;
     }
   }
 
