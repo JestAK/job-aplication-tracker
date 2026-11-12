@@ -1,5 +1,10 @@
 import * as bcrypt from 'bcrypt';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service.js';
 import { JwtService } from '@nestjs/jwt';
 import { jwtConstants } from './constants.js';
@@ -26,11 +31,14 @@ export class AuthService {
     // Check if the user already exists
     const user = await this.usersService.findOne(email);
     if (user) {
-      throw new Error('User already exists');
+      throw new ConflictException('User with this email already exists');
     }
 
     // Post to DB
     const result = await this.usersService.createUser(email, password);
+    if (!result) {
+      throw new InternalServerErrorException('User registration failed');
+    }
     console.log('User registered successfully:', result);
   }
 
@@ -41,15 +49,22 @@ export class AuthService {
     console.log('Login attempt for user:', username);
     const user = await this.usersService.findOne(username);
     if (!user || !(await this.isSamePassword(pass, user.password))) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Invalid username or password');
     }
-    const payload = { sub: user.userId, username: user.username };
+    //TODO: Implement role-based access control and include roles in the payload
+    const payload = { sub: user.userId, username: user.username, role: 'user' };
     return {
-      access_token: await this.jwtService.signAsync(payload),
-      refresh_token: await this.jwtService.signAsync(payload, {
-        secret: jwtConstants.refreshSecret,
-        expiresIn: '7d',
+      access_token: await this.jwtService.signAsync(payload, {
+        secret: jwtConstants.secret,
+        expiresIn: '15m',
       }),
+      refresh_token: await this.jwtService.signAsync(
+        { sub: user.userId, type: 'refresh' },
+        {
+          secret: jwtConstants.refreshSecret,
+          expiresIn: '7d',
+        },
+      ),
     };
   }
 

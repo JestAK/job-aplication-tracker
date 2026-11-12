@@ -14,3 +14,7 @@ yarn-error.log*
 
 /.idea
 /backend/src/generated/prisma
+
+# Next.js build cache and backups
+.next/
+.next.backup-*/
