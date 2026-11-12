@@ -3,7 +3,8 @@ import {
   Controller,
   Post,
   Res,
-  InternalServerErrorException,
+  Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/CreateUser.dto.js';
 import { LoginUserDto } from './dto/LoginUser.dto.js';
@@ -56,13 +57,27 @@ export class AuthController {
   }
 
   @Post('refresh-token')
-  async refreshToken(@Body() body: { refreshToken: string }) {
-    const { refreshToken } = body;
-    console.log('Refresh token attempt:', refreshToken);
+  async refreshToken(@Req() req: express.Request) {
+    const refreshToken = req.cookies?.refreshToken;
+
+    if (!refreshToken) {
+      throw new UnauthorizedException('Refresh token missing');
+    }
+
     try {
       return await this.authService.refreshToken(refreshToken);
     } catch (error) {
       return { message: 'Error refreshing token', error: error.message };
     }
+  }
+
+  @Post('is-authenticated')
+  async isAuthenticated(@Req() req: express.Request) {
+    const refreshToken = req.cookies?.refreshToken;
+    if (!refreshToken) {
+      return false;
+    }
+
+    return await this.authService.isRefreshTokenValid(refreshToken);
   }
 }

@@ -19,6 +19,11 @@ export class PrismaService implements OnModuleInit {
     return user[0] || null;
   }
 
+  async getOneUserById(id: string) {
+    const user = await db.orm.public.User.where({ id: id }).all();
+    return user[0] || null;
+  }
+
   async createUser(email: string, password: string) {
     return await db.orm.public.User.create({
       email: email,
@@ -43,5 +48,24 @@ export class PrismaService implements OnModuleInit {
       throw new Error('User not found');
     }
     return await db.orm.public.User.where({ id: userId }).update(newUserData);
+  }
+
+  async createRefreshToken(userId: string, token: string, expiresAt: Date) {
+    return await db.orm.public.RefreshToken.create({
+      userId: userId,
+      token: token,
+      expiresAt: expiresAt,
+    });
+  }
+
+  async getRefreshToken(token: string) {
+    const refreshToken = await db.orm.public.RefreshToken.where({
+      token: token,
+    }).all();
+    return refreshToken[0] || null;
+  }
+
+  async deleteRefreshToken(token: string) {
+    return await db.orm.public.RefreshToken.where({ token: token }).delete();
   }
 }
