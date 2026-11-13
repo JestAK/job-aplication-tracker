@@ -68,4 +68,11 @@ export class PrismaService implements OnModuleInit {
   async deleteRefreshToken(token: string) {
     return await db.orm.public.RefreshToken.where({ token: token }).delete();
   }
+
+  async getAllApplications(userId: string, profileId: string) {
+    return await db.orm.public.Application.where({
+      userId: userId,
+      profileId: profileId,
+    }).all();
+  }
 }
